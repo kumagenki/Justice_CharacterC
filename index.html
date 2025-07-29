@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaizen Character Creation Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px; /* Increased max-width for more breathing room */
+            margin: 1.25rem auto;
+            padding: 1rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.7rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.3rem;
+        }
+        /* More compact attribute and general cards */
+        .attribute-card {
+            background-color: #ecf0f1;
+            padding: 0.2rem 0.6rem; /* Reduced vertical padding */
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 0.2rem; /* Reduced margin-bottom */
+        }
+        .attribute-label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 0.05rem; /* Reduced margin-bottom */
+            font-size: 0.8rem; /* Slightly smaller font for labels */
+        }
+        input[type="number"], input[type="text"], textarea, select {
+            width: 100%;
+            padding: 0.15rem; /* Reduced padding */
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            background-color: #ffffff;
+            font-size: 0.8rem; /* Slightly smaller font for inputs */
+            color: #2c3e50;
+        }
+        input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+        }
+        /* Specific styling for XP input fields to control width */
+        .xp-input {
+            width: 60px; /* Fixed width for XP input fields */
+            text-align: center;
+            font-size: 0.8rem; /* Match other inputs */
+            padding: 0.15rem;
+        }
+        .skill-group {
+            border: 1px dashed #95a5a6;
+            padding: 0.5rem; /* Reduced padding */
+            border-radius: 8px;
+            margin-bottom: 0.7rem; /* Reduced margin-bottom */
+            background-color: #f9fafb;
+        }
+        .skill-group-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.4rem; /* Reduced margin-bottom */
+            font-size: 0.9rem; /* Slightly smaller font */
+        }
+        .calculated-value {
+            font-weight: 700;
+            color: #27ae60;
+            font-size: 0.85rem; /* Slightly smaller font */
+            flex-shrink: 0;
+            min-width: 55px;
+            text-align: right;
+        }
+        .info-box {
+            background-color: #e8f4f8;
+            border: 1px solid #3498db;
+            padding: 0.7rem; /* Reduced padding */
+            border-radius: 8px;
+            margin-top: 0.8rem; /* Reduced margin-top */
+            font-size: 0.75rem; /* Slightly smaller font */
+            color: #2c3e50;
+        }
+        .note {
+            font-size: 0.65rem;
+            color: #7f8c8d;
+            margin-top: 0.1rem;
+        }
+        /* Tighter grid gaps */
+        .grid-tight-gap {
+            gap: 0.6rem; /* Reduced gap */
+        }
+        
+        /* Specific styles for skill cards */
+        .skill-card {
+            display: block;
+            padding: 0.3rem 0.5rem; /* Reduced padding for overall card */
+        }
+        .skill-card .skill-label {
+            display: block;
+            margin-bottom: 0.1rem; /* Reduced space below label */
+            font-size: 0.75rem; /* Further smaller for compactness */
+        }
+        .skill-card .skill-input-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.4rem; /* Reduced gap between elements */
+        }
+        .skill-card .skill-rank-input {
+            width: 45px; /* Slightly reduced width for input */
+            font-size: 0.8rem; /* Adjusted font size */
+        }
+        .skill-card .calculated-value {
+            min-width: 45px; /* Adjusted min-width for value */
+            font-size: 0.8rem; /* Adjusted font size */
+        }
+        .skill-formula {
+            font-size: 0.7rem; /* Smaller font for the formula */
+            color: #555; /* Lighter color for the formula */
+            flex-grow: 1; /* Allow it to take available space */
+            text-align: left;
+            min-width: 0; /* Allow shrinking */
+            white-space: nowrap; /* Prevent formula from wrapping */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis if truncated */
+        }
+
+        /* New styles for bonus/penalty inputs and crit/fumble display */
+        .skill-mod-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.2rem; /* Small margin above this row */
+            gap: 0.4rem;
+        }
+        .skill-mod-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        .skill-mod-input-group label {
+            font-size: 0.7rem; /* Smaller label for bonus/penalty */
+            font-weight: 500;
+            color: #555;
+        }
+        .skill-mod-input {
+            width: 40px; /* Fixed width for bonus/penalty inputs */
+            text-align: center;
+            padding: 0.1rem;
+            font-size: 0.75rem;
+        }
+        .skill-chance-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.2rem; /* Small margin above this row */
+            font-size: 0.75rem; /* Smaller font for chance display */
+            color: #34495e;
+            gap: 0.4rem;
+        }
+        .skill-chance-label {
+            font-weight: 500;
+            color: #555;
+        }
+        .skill-chance-value {
+            font-weight: 700;
+            color: #27ae60; /* Green for success/crit */
+        }
+        .skill-chance-value.fumble {
+            color: #e74c3c; /* Red for fumble */
+        }
+        .wealth-description-text {
+            font-size: 0.75rem; /* Match info-box font size */
+            color: #2c3e50;
+            margin-top: 0.5rem; /* Space below input */
+        }
+        /* Styles for XP dropdown */
+        .xp-dropdown {
+            position: absolute;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 0.5rem;
+            z-index: 10;
+            width: calc(100% - 1.2rem); /* Adjust for padding of parent card */
+            left: 0.6rem; /* Align with parent card's padding */
+            top: 100%; /* Position below the button */
+            margin-top: 5px; /* Small margin below the button */
+            display: none; /* Controlled by JS */
+            max-height: 250px; /* Limit height for scrollability */
+            overflow-y: auto; /* Enable scrolling */
+        }
+        .xp-dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .xp-dropdown ul li a {
+            padding: 0.4rem 0.6rem;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+        .xp-dropdown ul li a:hover {
+            background-color: #f0f2f5;
+        }
+        .xp-dropdown-section {
+            padding: 0.6rem;
+            border-top: 1px solid #eee;
+            margin-top: 0.5rem;
+        }
+        .xp-dropdown-section:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+        .xp-message {
+            font-size: 0.7rem;
+            color: #e74c3c;
+            margin-top: 0.5rem;
+        }
+        .xp-cost-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #34495e;
+            margin-top: 0.5rem;
+        }
+        .xp-cost-value {
+            font-weight: 700;
+            color: #27ae60;
+        }
+        /* Success message style */
+        .xp-message.success {
+            color: #27ae60; /* Green for success */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="container">
+        <div class="header">
+            <h1 class="text-3xl font-bold">Kaizen Character Creation Sheet</h1>
+            <p class="text-md mt-2">Justice System Core Rules</p>
+        </div>
+
+        <!-- Character Information -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-5 grid-tight-gap">
+            <div class="attribute-card">
+                <label for="characterName" class="attribute-label">Character Name:</label>
+                <input type="text" id="characterName" value="Unnamed Hero" class="rounded-md">
+            </div>
+            <!-- Skill Ranks Spent Tracker -->
+            <div class="attribute-card">
+                <p class="attribute-label">Total Skill Ranks Spent:</p>
+                <p><span id="spentSkillRanks" class="calculated-value">0</span></p>
+                <p class="note">Keep track of your allocated skill ranks.</p>
+            </div>
+            <!-- XP Tracker Card -->
+            <div class="attribute-card relative">
+                <p class="attribute-label">Experience Points:</p>
+                <div class="flex justify-between items-center mb-1">
+                    <label for="xpEarned" class="text-xs font-medium text-gray-600">Earned:</label>
+                    <input type="number" id="xpEarned" value="0" min="0" oninput="updateXP()" class="rounded-md xp-input">
+                </div>
+                <div class="flex justify-between items-center mb-1">
+                    <label for="xpSpentManual" class="text-xs font-medium text-gray-600">Spent:</label>
+                    <input type="number" id="xpSpentManual" value="0" min="0" oninput="updateXP()" class="rounded-md xp-input">
+                </div>
+                <p class="attribute-label mt-2">Current XP:</p>
+                <p id="currentXP" class="calculated-value">0</p>
+                <p class="note">Earned - Spent</p>
+
+                <!-- Spend XP Button -->
+                <button id="spendXpButton" class="mt-3 w-full bg-blue-500 text-white py-1.5 rounded-md hover:bg-blue-600 transition-colors text-sm">
+                    Spend XP
+                </button>
+
+                <!-- XP Spending Dropdown -->
+                <div id="xpSpendDropdown" class="xp-dropdown" style="display: none;">
+                    <ul class="py-1">
+                        <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md" onclick="showXPOption('attributeSelection', event)">Increase Attribute</a></li>
+                        <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md" onclick="showXPOption('skillSelection', event)">Increase Skill Rank</a></li>
+                        <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md" onclick="showXPOption('combinationSelection', event)">Learn Combination Technique</a></li>
+                    </ul>
+
+                    <!-- Attribute Selection Sub-menu -->
+                    <div id="attributeSelection" class="xp-dropdown-section hidden">
+                        <p class="text-xs font-medium text-gray-600 mb-1">Select Attribute:</p>
+                        <select id="attributeToIncrease" class="w-full p-1 border border-gray-300 rounded-md text-sm" onchange="updateAttributeCost()">
+                            <option value="">-- Choose --</option>
+                            <option value="might">Might</option>
+                            <option value="dexterity">Dexterity</option>
+                            <option value="intellect">Intellect</option>
+                            <option value="charm">Charm</option>
+                            <option value="vitality">Vitality</option>
+                        </select>
+                        <p class="xp-cost-label mt-2">Cost: <span id="attributeCost" class="xp-cost-value">0 XP</span></p>
+                        <button class="mt-2 w-full bg-green-500 text-white py-1 rounded-md hover:bg-green-600 transition-colors text-sm" onclick="spendXPForAttribute()">Confirm Increase</button>
+                    </div>
+
+                    <!-- Skill Selection Sub-menu -->
+                    <div id="skillSelection" class="xp-dropdown-section hidden">
+                        <p class="text-xs font-medium text-gray-600 mb-1">Select Skill Category:</p>
+                        <select id="skillCategory" class="w-full p-1 border border-gray-300 rounded-md text-sm" onchange="populateSkillsForXpSpend(); updateSkillCost();">
+                            <option value="">-- Choose --</option>
+                            <option value="simple">Simple (50 XP)</option>
+                            <option value="standard">Standard (75 XP)</option>
+                            <option value="complex">Complex (100 XP)</option>
+                        </select>
+                        <p class="text-xs font-medium text-gray-600 mb-1 mt-2">Select Skill:</p>
+                        <select id="skillToIncrease" class="w-full p-1 border border-gray-300 rounded-md text-sm" onchange="updateSkillCost()">
+                            <option value="">-- Choose --</option>
+                        </select>
+                        <p class="xp-cost-label mt-2">Cost: <span id="skillCost" class="xp-cost-value">0 XP</span></p>
+                        <button class="mt-2 w-full bg-green-500 text-white py-1 rounded-md hover:bg-green-600 transition-colors text-sm" onclick="spendXPForSkill()">Confirm Increase</button>
+                    </div>
+
+                    <!-- Combination Technique Sub-menu -->
+                    <div id="combinationSelection" class="xp-dropdown-section hidden">
+                        <p class="text-xs font-medium text-gray-600 mb-1">Number of Abilities to Combine:</p>
+                        <select id="numAbilities" class="w-full p-1 border border-gray-300 rounded-md text-sm" onchange="updateCombinationCost()">
+                            <option value="">-- Choose --</option>
+                            <option value="2">Two Abilities (50 XP)</option>
+                            <option value="3">Three Abilities (100 XP)</option>
+                        </select>
+                        <p class="text-xs font-medium text-gray-600 mb-1 mt-2">Combination Name:</p>
+                        <input type="text" id="combinationName" class="w-full p-1 border border-gray-300 rounded-md text-sm" placeholder="e.g., Crushing Takedown">
+                        <p class="xp-cost-label mt-2">Cost: <span id="combinationCost" class="xp-cost-value">0 XP</span></p>
+                        <button class="mt-2 w-full bg-green-500 text-white py-1 rounded-md hover:bg-green-600 transition-colors text-sm" onclick="spendXPForCombination()">Confirm Learn</button>
+                    </div>
+
+                    <p id="xpSpendMessage" class="xp-message"></p>
+                </div>
+            </div>
+            <div class="attribute-card">
+                <label for="wealthLevel" class="attribute-label">Wealth Level:</label>
+                <input type="number" id="wealthLevel" value="2" min="0" max="10" class="rounded-md">
+                <p class="font-bold mt-2">Description:</p>
+                <p id="wealthDescription" class="wealth-description-text"></p>
+            </div>
+        </div>
+
+        <!-- Core Attributes -->
+        <h2 class="section-title">Core Attributes</h2>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-5 grid-tight-gap">
+            <div class="attribute-card">
+                <label for="might" class="attribute-label">Might:</label>
+                <input type="number" id="might" value="1" min="1" oninput="updateSecondaryAttributes(); updateAttributePoints(); updateEncumbrance();" class="rounded-md">
+            </div>
+            <div class="attribute-card">
+                <label for="dexterity" class="attribute-label">Dexterity:</label>
+                <input type="number" id="dexterity" value="1" min="1" oninput="updateSecondaryAttributes(); updateAttributePoints();" class="rounded-md">
+            </div>
+            <div class="attribute-card">
+                <label for="intellect" class="attribute-label">Intellect:</label>
+                <input type="number" id="intellect" value="1" min="1" oninput="updateSecondaryAttributes(); updateAttributePoints();" class="rounded-md">
+            </div>
+            <div class="attribute-card">
+                <label for="charm" class="attribute-label">Charm:</label>
+                <input type="number" id="charm" value="1" min="1" oninput="updateSecondaryAttributes(); updateAttributePoints();" class="rounded-md">
+            </div>
+            <div class="attribute-card">
+                <label for="vitality" class="attribute-label">Vitality:</label>
+                <input type="number" id="vitality" value="1" min="1" oninput="updateSecondaryAttributes(); updateAttributePoints();" class="rounded-md">
+            </div>
+        </div>
+        <!-- Attribute Points Allocated Tracker -->
+        <div class="attribute-card mt-2">
+            <p class="attribute-label">Attribute Points Allocated:</p>
+            <p><span id="allocatedAttributePoints" class="calculated-value">0</span> / 25</p>
+            <p class="note">Total points allocated to Might, Dexterity, Intellect, Charm, and Vitality (excluding base 1).</p>
+        </div>
+
+        <!-- Secondary Attributes -->
+        <h2 class="section-title mt-5">Secondary Attributes</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5 grid-tight-gap">
+            <div class="attribute-card">
+                <p class="attribute-label">Health:</p>
+                <p id="health" class="calculated-value">5</p>
+                <p class="note">Vitality x 5</p>
+            </div>
+            <div class="attribute-card">
+                <p class="attribute-label">Stamina:</p>
+                <p id="stamina" class="calculated-value">2</p>
+                <p class="note">Vitality + Might</p>
+            </div>
+            <div class="attribute-card">
+                <p class="attribute-label">Movement Speed (m/round):</p>
+                <p id="movementSpeed" class="calculated-value">2</p>
+                <p class="note">Dexterity + Might</p>
+            </div>
+            <div class="attribute-card">
+                <p class="attribute-label">Initiative:</p>
+                <p id="initiative" class="calculated-value">2</p>
+                <p class="note">Dexterity + Intellect</p>
+            </div>
+            <div class="attribute-card">
+                <p class="attribute-label">Carrying Capacity (%):</p>
+                <p id="carryingCapacity" class="calculated-value">0%</p>
+                <p class="note">(Might / 3) * 5% (round down)</p>
+            </div>
+            <div class="attribute-card">
+                <p class="attribute-label">Mental Resilience (Chi/Mana):</p>
+                <p id="mentalResilience" class="calculated-value">3</p>
+                <p class="note">Intellect + Vitality + Charm</p>
+            </div>
+            <div class="attribute-card">
+                <p class="attribute-label">Passive Defense (%):</p>
+                <p id="passiveDefense" class="calculated-value">10%</p>
+                <p class="note">(Dexterity + Intellect) * 5%</p>
+            </div>
+            <div class="attribute-card">
+                <p class="attribute-label">Active Defenses per Turn:</p>
+                <p id="activeDefenses" class="calculated-value">0</p>
+                <p class="note">(Dexterity + Intellect) / 3 (round down)</p>
+            </div>
+        </div>
+
+        <!-- Skills -->
+        <h2 class="section-title mt-5">Skills</h2>
+        <p class="note mb-3">Total Skill % = (Governing Attribute + Skill Ranks) * Base %</p>
+        <p class="note mb-4">Remaining Skill Ranks: <span id="remainingSkillRanks" class="font-bold text-blue-600">30</span></p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 grid-tight-gap">
+            <!-- Simple Skills -->
+            <div class="skill-group">
+                <h3 class="skill-group-title">Simple Skills (Base 5%)</h3>
+                <div id="simpleSkills"></div>
+            </div>
+
+            <!-- Standard Skills -->
+            <div class="skill-group">
+                <h3 class="skill-group-title">Standard Skills (Base 4%)</h3>
+                <div id="standardSkills"></div>
+            </div>
+
+            <!-- Complex Skills -->
+            <div class="skill-group">
+                <h3 class="skill-group-title">Complex Skills (Base 3%)</h3>
+                <div id="complexSkills"></div>
+            </div>
+        </div>
+
+        <!-- Gear & Encumbrance -->
+        <h2 class="section-title mt-5">Gear & Encumbrance</h2>
+        <div class="attribute-card mb-3">
+            <p class="attribute-label">Equipped Items:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                <div>
+                    <label for="numEquippedWeapons" class="text-xs font-medium text-gray-600">Weapons Equipped:</label>
+                    <input type="number" id="numEquippedWeapons" value="0" min="0" oninput="updateEncumbrance()" class="rounded-md w-20 text-center">
+                    <p class="note">1st weapon is free. -5% per additional.</p>
+                </div>
+                <div>
+                    <label for="numEquippedArmor" class="text-xs font-medium text-gray-600">Armor Pieces Equipped:</label>
+                    <input type="number" id="numEquippedArmor" value="0" min="0" oninput="updateEncumbrance()" class="rounded-md w-20 text-center">
+                    <p class="note">1st armor is free. -5% per additional.</p>
+                </div>
+                <div>
+                    <label for="numBackpacks" class="text-xs font-medium text-gray-600">Backpacks/Satchels:</label>
+                    <input type="number" id="numBackpacks" value="0" min="0" oninput="updateEncumbrance()" class="rounded-md w-20 text-center">
+                    <p class="note">1st backpack is free. -5% per additional.</p>
+                </div>
+                <div>
+                    <label for="numSpecialItems" class="text-xs font-medium text-gray-600">Extra Special Items:</label>
+                    <input type="number" id="numSpecialItems" value="0" min="0" oninput="updateEncumbrance()" class="rounded-md w-20 text-center">
+                    <p class="note">Count items worn beyond the 7 free slots (Head, Torso, Legs, Arms, Hands, Feet, Back) or multiple in one slot. -5% per item.</p>
+                </div>
+                <div>
+                    <label for="numRings" class="text-xs font-medium text-gray-600">Rings Worn:</label>
+                    <input type="number" id="numRings" value="0" min="0" oninput="updateEncumbrance()" class="rounded-md w-20 text-center">
+                    <p class="note">2 rings (one per hand) are free. -5% per additional.</p>
+                </div>
+            </div>
+        </div>
+        <div class="attribute-card mb-5">
+            <p class="attribute-label">Calculated Encumbrance:</p>
+            <p>Base Penalty: <span id="baseEncumbrancePenalty" class="calculated-value">0%</span></p>
+            <p>Carrying Capacity: <span id="calculatedCarryingCapacity" class="calculated-value">0%</span></p>
+            <p class="font-bold text-lg">Final Penalty: <span id="finalEncumbrancePenalty" class="calculated-value text-red-600">0%</span></p>
+            <p class="note mt-2">This penalty applies to all skill checks.</p>
+        </div>
+
+
+        <!-- Equipment & Wealth -->
+        <h2 class="section-title mt-5">Equipment & Wealth</h2>
+        <div class="attribute-card mb-5">
+            <label for="equipment" class="attribute-label">Equipped Items (Weapons, Armor, Special Items):</label>
+            <textarea id="equipment" rows="5" class="rounded-md" placeholder="List equipped items, e.g., Long Sword, Leather Armor, Backpack..."></textarea>
+            <p class="note mt-2">This section is for manual listing. Use the calculator above for penalties.</p>
+        </div>
+        <div class="attribute-card mb-5">
+            <label for="inventory" class="attribute-label">Inventory:</label>
+            <textarea id="inventory" rows="5" class="rounded-md" placeholder="List other items carried..."></textarea>
+        </div>
+
+        <!-- Status Effects -->
+        <h2 class="section-title mt-5">Status Effects</h2>
+        <div class="attribute-card mb-5">
+            <label for="statusEffects" class="attribute-label">Active Status Effects:</label>
+            <textarea id="statusEffects" rows="4" class="rounded-md" placeholder="List any active status effects (e.g., Bleeding, Impaired, Dazed)..."></textarea>
+        </div>
+
+        <!-- Notes & Special Abilities -->
+        <h2 class="section-title mt-5">Notes & Special Abilities</h2>
+        <div class="attribute-card">
+            <label for="notes" class="attribute-label">Martial Arts Styles, Stances, Combination Attacks, Other Notes:</label>
+            <textarea id="notes" rows="8" class="rounded-md" placeholder="Add details about your character's martial arts styles, learned stances, combination attacks, and any other relevant notes or special abilities."></textarea>
+        </div>
+    </div>
+
+    <script>
+        const coreAttributes = ['might', 'dexterity', 'intellect', 'charm', 'vitality'];
+        const skills = {
+            simple: [
+                { name: 'Melee', attr: 'might' },
+                { name: 'Unarmed Combat', attr: 'might' },
+                { name: 'Ranged Weapons', attr: 'dexterity' },
+                { name: 'Athletics', attr: 'might' },
+                { name: 'Stealth', attr: 'dexterity' },
+                { name: 'Survival', attr: 'vitality' },
+                { name: 'Crafting', attr: 'dexterity' },
+                { name: 'Perception', attr: 'intellect' }
+            ],
+            standard: [
+                { name: 'Small Arms', attr: 'dexterity' },
+                { name: 'Heavy Weapons', attr: 'might' },
+                { name: 'Pilot', attr: 'dexterity' },
+                { name: 'Persuasion', attr: 'charm' },
+                { name: 'Deception', attr: 'charm' },
+                { name: 'Intimidation', attr: 'charm' },
+                { name: 'Empathy', attr: 'charm' },
+                { name: 'Humanities', attr: 'intellect' },
+                { name: 'Intuition', attr: 'intellect' },
+                { name: 'Investigation', attr: 'intellect' },
+                { name: 'Navigation', attr: 'intellect' }
+            ],
+            complex: [
+                { name: 'Science', attr: 'intellect' },
+                { name: 'Engineering', attr: 'intellect' },
+                { name: 'Security', attr: 'intellect' },
+                { name: 'Medicine', attr: 'intellect' },
+                { name: 'Occult', attr: 'intellect' }
+            ]
+        };
+
+        const wealthLevels = {
+            0: "Destitute: No income, reliant on immediate survival (begging, scavenging, charity). Deeply in debt or no assets. Homeless or living in extremely dangerous/unsanitary conditions. Constant struggle for basic necessities. Purchasing power virtually nonexistent.",
+            1: "Impoverished: Meager, highly inconsistent income (day labor, petty scavenging). Always on the brink of ruin, barely covering essential costs. Lives in cramped, run-down shelters. Diet is minimal, cheap, and unreliable. Possessions are few and worn. Can occasionally afford cheapest food and basic necessities.",
+            2: "Scraping By: Low but somewhat more regular income (unskilled labor, basic service jobs). Consistently just enough to survive, with little to no savings. Lives in a small, basic dwelling. Eats simple, inexpensive meals regularly. Owns a few essential items, likely second-hand. Can afford basic tools, simple clothing, and staple foods.",
+            3: "Stable: Stable, low income from reliable work (skilled tradesperson, junior clerk, small independent craft). Can save small amounts for emergencies. Lives in a small apartment or basic house. Enjoys regular, adequate meals. Can afford occasional minor comforts or entertainment. Basic equipment for their trade, decent quality everyday items, simple weapons or tools for defense.",
+            4: "Comfortable: Stable, decent income from a respectable profession (successful artisan, small shop owner, junior professional). Can afford some non-essentials and save steadily. Owns or rents a comfortable home. Eats well with some variety. Can afford regular entertainment, hobbies, and better quality goods. Quality tools and equipment, more advanced personal items, can afford some private services.",
+            5: "Affluent: High income from a successful career or business. Substantial savings and beginning investments. Money is rarely a major daily worry. Possesses a spacious, well-furnished home. Enjoys fine dining, regular travel, and access to desirable services. May employ some household help.",
+            6: "Wealthy: Significant accumulated wealth generating passive income (investments, profitable businesses, land ownership). Daily work is optional. Owns multiple properties or a large estate. Enjoys a high standard of living with considerable comfort and social standing. Likely employs a dedicated staff.",
+            7: "Rich: Controls substantial assets and major enterprises. Wealth is in the tens of millions or more. Their financial decisions impact regional economies. Lives in opulent residences, owns private transportation (luxury vehicles, private planes or yachts). Extensive social and political connections. Private security is significant.",
+            8: "Multi-Millionaire: Controls vast fortunes, significant stakes in major industries, and widespread investments. Wealth measured in hundreds of millions or billions. Multiple luxurious properties globally, fleets of private vehicles, exerts considerable social and political influence on a national level.",
+            9: "Billionaire: Holds unimaginable wealth, controlling entire sectors of the global economy. Their financial power can influence international affairs and even shape industries. Lives in unparalleled luxury with private islands, orbital habitats, or vast estates. Their decisions have global consequences.",
+            10: "Oligarch: Possesses truly limitless wealth, with holdings so vast they dwarf national economies. Their control over resources is effectively absolute. Lives in ultimate opulence, insulated from most worldly concerns. Their influence shapes global events and the lives of billions. Can buy entire nations, fund the creation of new technologies that redefine society, and exert influence on a planetary or even interplanetary scale. There is nothing commercially available they cannot acquire."
+        };
+
+        // Default total skill ranks available for "Standard" experience level
+        const totalSkillRanksAvailable = 30; // This value is still used for the "Remaining Skill Ranks" note
+        const totalAttributePointsAvailable = 25; // Total attribute points for allocation
+
+        // XP Costs from Kaizen Core Rules
+        const xpCosts = {
+            attribute: (currentValue) => 100 + (currentValue - 1) * 50,
+            simpleSkill: 50,
+            standardSkill: 75,
+            complexSkill: 100,
+            combination2Abilities: 50,
+            combination3Abilities: 100
+        };
+
+        // Function to create skill input elements
+        function createSkillInput(skill, category) {
+            const skillDiv = document.createElement('div');
+            skillDiv.className = 'skill-card';
+            skillDiv.innerHTML = `
+                <label for="${skill.name.replace(/\s/g, '')}Ranks" class="skill-label">${skill.name} (${skill.attr.charAt(0).toUpperCase() + skill.attr.slice(1)}):</label>
+                <div class="skill-input-row">
+                    <span id="${skill.name.replace(/\s/g, '')}Formula" class="skill-formula"></span>
+                    <input type="number" id="${skill.name.replace(/\s/g, '')}Ranks" value="0" min="0" class="rounded-md skill-rank-input" data-governing-attribute="${skill.attr}" data-base-percentage="${category === 'simple' ? 5 : category === 'standard' ? 4 : 3}" oninput="updateSkillTotal('${skill.name.replace(/\s/g, '')}', '${skill.attr}', ${category === 'simple' ? 5 : category === 'standard' ? 4 : 3}); updateSkillRankTrackers();">
+                </div>
+                <div class="skill-mod-row">
+                    <div class="skill-mod-input-group">
+                        <label for="${skill.name.replace(/\s/g, '')}Bonus">Bonus:</label>
+                        <input type="number" id="${skill.name.replace(/\s/g, '')}Bonus" value="0" class="rounded-md skill-mod-input" oninput="updateSkillTotal('${skill.name.replace(/\s/g, '')}', '${skill.attr}', ${category === 'simple' ? 5 : category === 'standard' ? 4 : 3});">
+                    </div>
+                    <div class="skill-mod-input-group">
+                        <label for="${skill.name.replace(/\s/g, '')}Penalty">Penalty:</label>
+                        <input type="number" id="${skill.name.replace(/\s/g, '')}Penalty" value="0" class="rounded-md skill-mod-input" oninput="updateSkillTotal('${skill.name.replace(/\s/g, '')}', '${skill.attr}', ${category === 'simple' ? 5 : category === 'standard' ? 4 : 3});">
+                    </div>
+                </div>
+                <div class="skill-chance-display">
+                    <span class="skill-chance-label">Adjusted: <span id="${skill.name.replace(/\s/g, '')}Adj" class="skill-chance-value">0%</span></span>
+                    <span class="skill-chance-label">Crit: <span id="${skill.name.replace(/\s/g, '')}Crit" class="skill-chance-value">0%</span></span>
+                    <span class="skill-chance-label">Fumble: <span id="${skill.name.replace(/\s/g, '')}Fumble" class="skill-chance-value fumble">0%</span></span>
+                </div>
+            `;
+            return skillDiv;
+        }
+
+        // Populate skill sections
+        function populateSkills() {
+            document.getElementById('simpleSkills').innerHTML = '';
+            document.getElementById('standardSkills').innerHTML = '';
+            document.getElementById('complexSkills').innerHTML = '';
+
+            skills.simple.forEach(skill => {
+                document.getElementById('simpleSkills').appendChild(createSkillInput(skill, 'simple'));
+            });
+            skills.standard.forEach(skill => {
+                document.getElementById('standardSkills').appendChild(createSkillInput(skill, 'standard'));
+            });
+            skills.complex.forEach(skill => {
+                document.getElementById('complexSkills').appendChild(createSkillInput(skill, 'complex'));
+            });
+        }
+
+        // Update skill total based on attribute and ranks, and display formula
+        function updateSkillTotal(skillId, governingAttr, basePercentage) {
+            const attrValue = parseInt(document.getElementById(governingAttr).value) || 0;
+            const skillRanks = parseInt(document.getElementById(`${skillId}Ranks`).value) || 0;
+            const bonus = parseInt(document.getElementById(`${skillId}Bonus`).value) || 0;
+            const penalty = parseInt(document.getElementById(`${skillId}Penalty`).value) || 0;
+
+            const baseSkill = (attrValue + skillRanks) * basePercentage;
+            const adjustedSkill = baseSkill + bonus - penalty;
+
+            document.getElementById(`${skillId}Adj`).textContent = `${adjustedSkill}%`; // Display adjusted skill
+
+            // Update formula display
+            const formulaElement = document.getElementById(`${skillId}Formula`);
+            if (formulaElement) {
+                // Get the full attribute name from the 'skills' object for clarity in the formula
+                const fullGoverningAttr = governingAttr.charAt(0).toUpperCase() + governingAttr.slice(1);
+                let formulaText = `(${fullGoverningAttr} + ${skillRanks}) * ${basePercentage}%`;
+                if (bonus !== 0) formulaText += ` + ${bonus}%`;
+                if (penalty !== 0) formulaText += ` - ${penalty}%`;
+                formulaElement.textContent = formulaText;
+            }
+
+            // Calculate Crit Chance: 10% of effective skill level
+            let critChanceValue = Math.floor(adjustedSkill * 0.10); // 10% of adjusted skill, floored
+            critChanceValue = Math.max(0, critChanceValue); // Ensure it's not negative
+
+            if (critChanceValue === 0) {
+                document.getElementById(`${skillId}Crit`).textContent = `0%`;
+            } else {
+                document.getElementById(`${skillId}Crit`).textContent = `1-${critChanceValue}`;
+            }
+
+            // Calculate Fumble Chance: Base 1% + penalty amount
+            // A natural 100 is always a fumble (1% chance).
+            // Penalties increase the fumble range by 1% per point of penalty.
+            let fumbleRangeSize = 1 + penalty; // Start with 1% for rolling 100, add penalty
+            fumbleRangeSize = Math.max(1, fumbleRangeSize); // Ensure minimum 1% fumble chance
+
+            let fumbleLowerBound = 100 - fumbleRangeSize + 1;
+            // Ensure lower bound doesn't go below 1 (though unlikely with typical penalties)
+            fumbleLowerBound = Math.max(1, fumbleLowerBound);
+
+            if (fumbleRangeSize === 1) {
+                document.getElementById(`${skillId}Fumble`).textContent = `100`;
+            } else {
+                document.getElementById(`${skillId}Fumble`).textContent = `${fumbleLowerBound}-100`;
+            }
+        }
+
+        // Update all skill totals and formulas
+        function updateAllSkillTotals() {
+            skills.simple.forEach(skill => {
+                updateSkillTotal(skill.name.replace(/\s/g, ''), skill.attr, 5);
+            });
+            skills.standard.forEach(skill => {
+                updateSkillTotal(skill.name.replace(/\s/g, ''), skill.attr, 4);
+            });
+            skills.complex.forEach(skill => {
+                updateSkillTotal(skill.name.replace(/\s/g, ''), skill.attr, 3);
+            });
+        }
+
+        // Update spent and remaining skill ranks
+        function updateSkillRankTrackers() {
+            let ranksSpent = 0;
+            document.querySelectorAll('.skill-rank-input').forEach(input => {
+                ranksSpent += parseInt(input.value) || 0;
+            });
+            document.getElementById('spentSkillRanks').textContent = ranksSpent;
+            document.getElementById('remainingSkillRanks').textContent = totalSkillRanksAvailable - ranksSpent;
+        }
+
+        // Update XP earned/spent
+        function updateXP() {
+            const xpEarned = parseInt(document.getElementById('xpEarned').value) || 0;
+            const xpSpentManual = parseInt(document.getElementById('xpSpentManual').value) || 0;
+            const currentXP = xpEarned - xpSpentManual;
+            document.getElementById('currentXP').textContent = currentXP;
+        }
+
+        // Update attribute points allocated (excluding base 1 from each attribute)
+        function updateAttributePoints() {
+            let allocatedPoints = 0;
+            coreAttributes.forEach(attr => {
+                const attrValue = parseInt(document.getElementById(attr).value) || 0;
+                // Subtract 1 from each attribute value before adding to allocated points
+                allocatedPoints += Math.max(0, attrValue - 1);
+            });
+            document.getElementById('allocatedAttributePoints').textContent = allocatedPoints;
+        }
+
+        // Update secondary attributes
+        function updateSecondaryAttributes() {
+            const might = parseInt(document.getElementById('might').value) || 0;
+            const dexterity = parseInt(document.getElementById('dexterity').value) || 0;
+            const intellect = parseInt(document.getElementById('intellect').value) || 0;
+            const charm = parseInt(document.getElementById('charm').value) || 0;
+            const vitality = parseInt(document.getElementById('vitality').value) || 0;
+
+            document.getElementById('health').textContent = `${vitality * 5}`; // Updated to Vitality * 5
+            document.getElementById('stamina').textContent = `${vitality + might}`;
+            document.getElementById('movementSpeed').textContent = `${dexterity + might}`;
+            document.getElementById('initiative').textContent = `${dexterity + intellect}`;
+            document.getElementById('carryingCapacity').textContent = `${Math.floor(might / 3) * 5}%`;
+            document.getElementById('mentalResilience').textContent = `${intellect + vitality + charm}`;
+            document.getElementById('passiveDefense').textContent = `${(dexterity + intellect) * 5}%`;
+            document.getElementById('activeDefenses').textContent = `${Math.floor((dexterity + intellect) / 3)}`;
+
+            updateAllSkillTotals(); // Recalculate skill totals when core attributes change
+            updateSkillRankTrackers(); // Update skill ranks display
+            updateAttributePoints(); // Update attribute points display
+            updateEncumbrance(); // Update encumbrance when Might changes
+        }
+
+        // New function to update encumbrance calculations
+        function updateEncumbrance() {
+            const might = parseInt(document.getElementById('might').value) || 0;
+            const numEquippedWeapons = parseInt(document.getElementById('numEquippedWeapons').value) || 0;
+            const numEquippedArmor = parseInt(document.getElementById('numEquippedArmor').value) || 0;
+            const numBackpacks = parseInt(document.getElementById('numBackpacks').value) || 0;
+            const numSpecialItems = parseInt(document.getElementById('numSpecialItems').value) || 0; // User inputs EXTRA special items
+            const numRings = parseInt(document.getElementById('numRings').value) || 0;
+
+            let baseEncumbrance = 0;
+
+            // Penalty for extra weapons (beyond 1 free)
+            baseEncumbrance += Math.max(0, numEquippedWeapons - 1) * 5;
+            // Penalty for extra armor (beyond 1 free)
+            baseEncumbrance += Math.max(0, numEquippedArmor - 1) * 5;
+            // Penalty for extra backpacks (beyond 1 free)
+            baseEncumbrance += Math.max(0, numBackpacks - 1) * 5;
+            // Penalty for extra special items (user counts these as 'extra' beyond the 7 free slots or multiple in one slot)
+            baseEncumbrance += Math.max(0, numSpecialItems) * 5;
+            // Penalty for extra rings (beyond 2 free)
+            baseEncumbrance += Math.max(0, numRings - 2) * 5;
+
+            document.getElementById('baseEncumbrancePenalty').textContent = `${baseEncumbrance}%`;
+
+            const carryingCapacity = Math.floor(might / 3) * 5;
+            document.getElementById('calculatedCarryingCapacity').textContent = `${carryingCapacity}%`;
+
+            const finalPenalty = Math.max(0, baseEncumbrance - carryingCapacity);
+            document.getElementById('finalEncumbrancePenalty').textContent = `${finalPenalty}%`;
+        }
+
+        // Update wealth description
+        function updateWealthDescription() {
+            const wealthLevel = parseInt(document.getElementById('wealthLevel').value) || 0;
+            document.getElementById('wealthDescription').textContent = wealthLevels[wealthLevel] || "Invalid Wealth Level.";
+        }
+
+        // --- XP Spending Logic ---
+        const xpSpendDropdown = document.getElementById('xpSpendDropdown');
+        const spendXpButton = document.getElementById('spendXpButton');
+        const attributeSelection = document.getElementById('attributeSelection');
+        const skillSelection = document.getElementById('skillSelection');
+        const combinationSelection = document.getElementById('combinationSelection');
+        const attributeToIncreaseSelect = document.getElementById('attributeToIncrease');
+        const skillCategorySelect = document.getElementById('skillCategory');
+        const skillToIncreaseSelect = document.getElementById('skillToIncrease');
+        const numAbilitiesSelect = document.getElementById('numAbilities');
+        const xpSpendMessage = document.getElementById('xpSpendMessage');
+
+        // Toggle dropdown visibility
+        spendXpButton.addEventListener('click', (event) => {
+            console.log("Spend XP button clicked!"); // For debugging
+            event.stopPropagation(); // Prevent click from immediately closing it
+
+            if (xpSpendDropdown.style.display === 'block') {
+                xpSpendDropdown.style.display = 'none';
+                console.log("Hiding dropdown. Current display:", xpSpendDropdown.style.display);
+            } else {
+                xpSpendDropdown.style.display = 'block';
+                console.log("Showing dropdown. Current display:", xpSpendDropdown.style.display);
+            }
+            
+            // Hide all sub-sections when opening main dropdown
+            attributeSelection.classList.add('hidden');
+            skillSelection.classList.add('hidden');
+            combinationSelection.classList.add('hidden');
+            xpSpendMessage.textContent = ''; // Clear any previous messages
+            xpSpendMessage.classList.remove('success'); // Clear success class
+        });
+
+        // Close dropdown if clicked outside
+        document.addEventListener('click', (event) => {
+            if (xpSpendDropdown && spendXpButton && !xpSpendDropdown.contains(event.target) && !spendXpButton.contains(event.target)) {
+                xpSpendDropdown.style.display = 'none';
+                console.log("Clicked outside. Hiding dropdown. Current display:", xpSpendDropdown.style.display);
+            }
+        });
+
+        // Show specific XP spending option sub-menu
+        function showXPOption(optionId, event) {
+            if (event) event.preventDefault(); // Prevent default link behavior
+            // Hide all sub-sections first
+            attributeSelection.classList.add('hidden');
+            skillSelection.classList.add('hidden');
+            combinationSelection.classList.add('hidden');
+            xpSpendMessage.textContent = ''; // Clear messages
+            xpSpendMessage.classList.remove('success'); // Clear success class
+
+            // Show the selected sub-section
+            document.getElementById(optionId).classList.remove('hidden');
+
+            // Reset specific dropdowns/inputs within the shown section
+            if (optionId === 'attributeSelection') {
+                attributeToIncreaseSelect.value = '';
+                document.getElementById('attributeCost').textContent = '0 XP';
+            } else if (optionId === 'skillSelection') {
+                skillCategorySelect.value = '';
+                skillToIncreaseSelect.innerHTML = '<option value="">-- Choose --</option>'; // Clear skills
+                document.getElementById('skillCost').textContent = '0 XP';
+            } else if (optionId === 'combinationSelection') {
+                numAbilitiesSelect.value = '';
+                document.getElementById('combinationName').value = '';
+                document.getElementById('combinationCost').textContent = '0 XP';
+            }
+
+            xpSpendDropdown.scrollTop = xpSpendDropdown.scrollHeight; // Scroll to bottom
+        }
+
+        // Update attribute cost display
+        function updateAttributeCost() {
+            const selectedAttribute = attributeToIncreaseSelect.value;
+            if (selectedAttribute) {
+                const currentValue = parseInt(document.getElementById(selectedAttribute).value) || 1;
+                const cost = xpCosts.attribute(currentValue);
+                document.getElementById('attributeCost').textContent = `${cost} XP`;
+            } else {
+                document.getElementById('attributeCost').textContent = '0 XP';
+            }
+        }
+
+        // Spend XP for attribute increase
+        function spendXPForAttribute() {
+            const selectedAttribute = attributeToIncreaseSelect.value;
+            let currentXP = parseInt(document.getElementById('currentXP').textContent) || 0;
+            let xpSpentManual = parseInt(document.getElementById('xpSpentManual').value) || 0;
+
+            if (!selectedAttribute) {
+                xpSpendMessage.textContent = 'Please select an attribute.';
+                xpSpendMessage.classList.remove('success');
+                return;
+            }
+
+            const attributeCurrentValue = parseInt(document.getElementById(selectedAttribute).value) || 1;
+            const cost = xpCosts.attribute(attributeCurrentValue);
+
+            if (currentXP < cost) {
+                xpSpendMessage.textContent = `Not enough XP! Requires ${cost} XP.`;
+                xpSpendMessage.classList.remove('success');
+                return;
+            }
+
+            // Deduct XP
+            xpSpentManual += cost;
+            document.getElementById('xpSpentManual').value = xpSpentManual;
+
+            // Increment attribute
+            const attributeInput = document.getElementById(selectedAttribute);
+            attributeInput.value = parseInt(attributeInput.value) + 1;
+
+            // Update all related calculations
+            updateXP();
+            updateSecondaryAttributes(); // This will trigger all other necessary updates
+            xpSpendMessage.textContent = `Successfully increased ${selectedAttribute.charAt(0).toUpperCase() + selectedAttribute.slice(1)}! (-${cost} XP)`;
+            xpSpendMessage.classList.add('success');
+
+            // Optionally hide the dropdown after successful spend
+            setTimeout(() => {
+                xpSpendDropdown.style.display = 'none'; // Use direct style manipulation
+                attributeSelection.classList.add('hidden');
+                xpSpendMessage.textContent = '';
+                xpSpendMessage.classList.remove('success');
+                attributeToIncreaseSelect.value = ''; // Reset selection
+                document.getElementById('attributeCost').textContent = '0 XP';
+            }, 1500);
+        }
+
+        // Populate skills dropdown based on category
+        function populateSkillsForXpSpend() {
+            const category = skillCategorySelect.value;
+            skillToIncreaseSelect.innerHTML = '<option value="">-- Choose --</option>'; // Clear existing options
+
+            let skillsToPopulate = [];
+            if (category === 'simple') {
+                skillsToPopulate = skills.simple;
+            } else if (category === 'standard') {
+                skillsToPopulate = skills.standard;
+            } else if (category === 'complex') {
+                skillsToPopulate = skills.complex;
+            }
+
+            skillsToPopulate.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.name.replace(/\s/g, '');
+                option.textContent = skill.name;
+                skillToIncreaseSelect.appendChild(option);
+            });
+        }
+
+        // Update skill cost display
+        function updateSkillCost() {
+            const category = skillCategorySelect.value;
+            let cost = 0;
+            if (category === 'simple') {
+                cost = xpCosts.simpleSkill;
+            } else if (category === 'standard') {
+                cost = xpCosts.standardSkill;
+            } else if (category === 'complex') {
+                cost = xpCosts.complexSkill;
+            }
+            document.getElementById('skillCost').textContent = `${cost} XP`;
+        }
+
+        // Spend XP for skill rank increase
+        function spendXPForSkill() {
+            const category = skillCategorySelect.value;
+            const skillId = skillToIncreaseSelect.value;
+            let currentXP = parseInt(document.getElementById('currentXP').textContent) || 0;
+            let xpSpentManual = parseInt(document.getElementById('xpSpentManual').value) || 0;
+
+            if (!category || !skillId) {
+                xpSpendMessage.textContent = 'Please select a skill category and a skill.';
+                xpSpendMessage.classList.remove('success');
+                return;
+            }
+
+            let cost = 0;
+            if (category === 'simple') {
+                cost = xpCosts.simpleSkill;
+            } else if (category === 'standard') {
+                cost = xpCosts.standardSkill;
+            } else if (category === 'complex') {
+                cost = xpCosts.complexSkill;
+            }
+
+            if (currentXP < cost) {
+                xpSpendMessage.textContent = `Not enough XP! Requires ${cost} XP.`;
+                xpSpendMessage.classList.remove('success');
+                return;
+            }
+
+            // Deduct XP
+            xpSpentManual += cost;
+            document.getElementById('xpSpentManual').value = xpSpentManual;
+
+            // Increment skill rank
+            const skillInput = document.getElementById(`${skillId}Ranks`);
+            skillInput.value = parseInt(skillInput.value) + 1;
+
+            // Update all related calculations
+            updateXP();
+            // No need to call updateSecondaryAttributes here, as skill rank changes don't affect secondary attributes directly
+            // Instead, directly call updateSkillTotal for the affected skill and updateSkillRankTrackers
+            const skillObj = skills[category].find(s => s.name.replace(/\s/g, '') === skillId);
+            if (skillObj) {
+                updateSkillTotal(skillId, skillObj.attr, category === 'simple' ? 5 : category === 'standard' ? 4 : 3);
+            }
+            updateSkillRankTrackers();
+
+            xpSpendMessage.textContent = `Successfully increased ${skillToIncreaseSelect.options[skillToIncreaseSelect.selectedIndex].text} rank! (-${cost} XP)`;
+            xpSpendMessage.classList.add('success');
+
+            setTimeout(() => {
+                xpSpendDropdown.style.display = 'none'; // Use direct style manipulation
+                skillSelection.classList.add('hidden');
+                xpSpendMessage.textContent = '';
+                xpSpendMessage.classList.remove('success');
+                skillCategorySelect.value = '';
+                skillToIncreaseSelect.innerHTML = '<option value="">-- Choose --</option>';
+                document.getElementById('skillCost').textContent = '0 XP';
+            }, 1500);
+        }
+
+        // Update combination cost display
+        function updateCombinationCost() {
+            const numAbilities = numAbilitiesSelect.value;
+            let cost = 0;
+            if (numAbilities === '2') {
+                cost = xpCosts.combination2Abilities;
+            } else if (numAbilities === '3') {
+                cost = xpCosts.combination3Abilities;
+            }
+            document.getElementById('combinationCost').textContent = `${cost} XP`;
+        }
+
+        // Spend XP for combination technique
+        function spendXPForCombination() {
+            const numAbilities = numAbilitiesSelect.value;
+            const combinationName = document.getElementById('combinationName').value.trim();
+            let currentXP = parseInt(document.getElementById('currentXP').textContent) || 0;
+            let xpSpentManual = parseInt(document.getElementById('xpSpentManual').value) || 0;
+
+            if (!numAbilities || !combinationName) {
+                xpSpendMessage.textContent = 'Please select the number of abilities and enter a combination name.';
+                xpSpendMessage.classList.remove('success');
+                return;
+            }
+
+            let cost = 0;
+            if (numAbilities === '2') {
+                cost = xpCosts.combination2Abilities;
+            } else if (numAbilities === '3') {
+                cost = xpCosts.combination3Abilities;
+            }
+
+            if (currentXP < cost) {
+                xpSpendMessage.textContent = `Not enough XP! Requires ${cost} XP.`;
+                xpSpendMessage.classList.remove('success');
+                return;
+            }
+
+            // Deduct XP
+            xpSpentManual += cost;
+            document.getElementById('xpSpentManual').value = xpSpentManual;
+
+            // Add combination to notes (or a dedicated list if we had one)
+            const notesTextArea = document.getElementById('notes');
+            notesTextArea.value += `\nNew Combination Technique: "${combinationName}" (Combines ${numAbilities} abilities, Cost: ${cost} XP)`;
+
+            // Update XP display
+            updateXP();
+            xpSpendMessage.textContent = `Successfully learned "${combinationName}"! (-${cost} XP)`;
+            xpSpendMessage.classList.add('success');
+
+            setTimeout(() => {
+                xpSpendDropdown.style.display = 'none'; // Use direct style manipulation
+                combinationSelection.classList.add('hidden');
+                xpSpendMessage.textContent = '';
+                xpSpendMessage.classList.remove('success');
+                numAbilitiesSelect.value = '';
+                document.getElementById('combinationName').value = '';
+                document.getElementById('combinationCost').textContent = '0 XP';
+            }, 1500);
+        }
+
+
+        // Initial population and calculation
+        window.onload = () => {
+            console.log("Window loaded. Initializing script.");
+            populateSkills();
+            updateSecondaryAttributes(); // This will also call updateAllSkillTotals, updateSkillRankTrackers, updateAttributePoints, and updateEncumbrance
+            updateWealthDescription();
+            updateXP(); // Initialize XP display
+            updateEncumbrance(); // Ensure encumbrance is calculated on load
+
+            // After getting elements
+            const xpSpendDropdown = document.getElementById('xpSpendDropdown');
+            const spendXpButton = document.getElementById('spendXpButton');
+            console.log("xpSpendDropdown element:", xpSpendDropdown);
+            console.log("spendXpButton element:", spendXpButton);
+
+            // Add event listeners for wealth level change
+            document.getElementById('wealthLevel').addEventListener('input', updateWealthDescription);
+        };
+    </script>
+</body>
+</html>
